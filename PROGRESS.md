@@ -1,17 +1,21 @@
 # Progress
 
 ## 当前状态
-- 技术方案已写入 `docs/tech-design-v1.md`，锁定 Python、FastAPI、Jinja2、HTMX、Alpine、uv、Docker 和 GitHub Actions。
-- 玩家状态采用浏览器 `localStorage`，服务端无状态；未来通过仓储层迁移到数据库。
-- 插件采用独立包、声明式内容加受限 Python 规则，并通过 `api_version` 演进。
-- 工程尚未初始化，类型检查、测试和 Lint 仍不可执行。
+- 5 人分组已获教师批准；课程 MVP 已收窄为 10 回合、2 结局、2 世界线、1 个主模型和 1 个组内扩展。
+- PRD 已改为由组内非核心成员完成独立扩展，不再要求外部作者。
+- 五人分工说明已写入 `docs/分工说明.md`；角色姓名、首次 PR 和实际 Review 记录待确认。
+- GitHub 远程 `origin/master` 已配置；当前文档改动尚未提交。
+- 工程、测试、CI、正式设计文档和发行物仍未建立。
 
 ## 下一步
-- 讨论并编写插件规范与官方示例包契约。
-- 初始化 Python 工程并建立 ruff、mypy、pytest 可执行基线。
-- 实测三家模型预设并选择 Docker 托管平台。
+- 确认成员与角色，并固定交叉 Review 配对。
+- 初始化 Python 工程和质量基线。
+- 编写插件公开契约，并由非核心成员据此实现独立扩展。
+- 选择唯一主模型预设并准备 Mock/后备路径。
+- 建立 GitHub Actions、Tag 和 release/RELEASE.md 流程。
 
 ## 已知问题
-- 托管平台、默认模型和有限模型列表尚未锁定。
-- 插件字段、游戏状态 schema 和外部作者档期尚未落实。
-- 内容预算仍待最终确认。
+- 岗位最终人选和 Review 配对尚未确认。
+- 无 pyproject.toml、uv.lock、源码和测试，类型检查、Lint、测试不可执行。
+- README、LICENSE、docs/DESIGN.docx、CI 和发行物尚未完成。
+- 插件字段、状态 schema、内容预算和主模型预设尚未锁定。
