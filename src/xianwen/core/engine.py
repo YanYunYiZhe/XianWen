@@ -6,7 +6,7 @@
 """
 
 from xianwen.core.base_content import MORNING_TRAINING
-from xianwen.core.models import Choice, Event, GameState, TurnResult
+from xianwen.core.models import Choice, Event, LegacyGameState, TurnResult
 
 
 class InvalidEventError(ValueError):
@@ -17,12 +17,12 @@ class InvalidChoiceError(ValueError):
     """当请求的选项 ID 不属于该事件时抛出"""
 
 
-def new_game() -> GameState:
-    """创建一个全新的游戏状态，用于第一回合"""
-    return GameState()
+def new_game() -> LegacyGameState:
+    """创建一个全新的第一阶段兼容游戏状态。"""
+    return LegacyGameState()
 
 
-def get_current_event(state: GameState) -> Event:
+def get_current_event(state: LegacyGameState) -> Event:
     """根据给定的游戏状态，返回当前可用的事件
 
     第一阶段的事件选择故意做得很简单：只有一个固定事件
@@ -31,7 +31,11 @@ def get_current_event(state: GameState) -> Event:
     return MORNING_TRAINING
 
 
-def apply_choice(state: GameState, event_id: str, choice_id: str) -> TurnResult:
+def apply_choice(
+    state: LegacyGameState,
+    event_id: str,
+    choice_id: str,
+) -> TurnResult:
     """
     校验选择，并返回应用选择后的新状态与结果文字
 
@@ -40,8 +44,8 @@ def apply_choice(state: GameState, event_id: str, choice_id: str) -> TurnResult:
     event = _resolve_event(event_id)
     choice = _resolve_choice(event, choice_id)
 
-    # new 一个GameState
-    new_state = GameState(
+    # 生成新的第一阶段兼容状态快照
+    new_state = LegacyGameState(
         year=state.year + 1,
         cultivation=state.cultivation + choice.effect.cultivation_delta,
         ended=state.ended,
