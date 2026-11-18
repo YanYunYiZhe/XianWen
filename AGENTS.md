@@ -27,6 +27,10 @@
 
 - 提交信息遵循 Conventional Commits：
   `feat:` / `fix:` / `refactor:` / `docs:` / `test:` / `chore:`
+- `develop` 是默认集成分支；功能分支从 `develop` 创建，并通过 PR 合并回
+  `develop`。
+- 日常功能改动不得直接提交或合并到 `master`；`master` 只接收经过
+  Review 和 CI 验证的 `develop` 稳定发布合并。
 - 每个提交只做一件事，跨模块改动拆成多个提交。
 - 完成定义：测试、Lint、类型检查退出码均为 0。
   退出码非 0 时，不得宣布任务完成。
