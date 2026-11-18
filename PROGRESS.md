@@ -1,17 +1,17 @@
 # Progress
 
 ## 当前状态
-- PRD、技术方案、接口文档、契约文档和设计说明已升级到“受控 AI 内容生成”方向。
-- 新文档明确核心/动态世界状态分层、AI 生成内容提案与校验、事件簿、人物记忆和十回合伏笔系统。
-- `AGENTS.md` 已加入新架构约束及接口/契约/核心设计同步规则。
+- 受控 AI 内容生成架构文档已提交：`01eb451` 和 `43fafcf`。
+- 当前分支 `feat/core-minimal-turn` 领先远端 2 个提交，文档工作区已提交。
+- 新契约已覆盖核心/动态世界状态、AI 生成内容、事件簿、人物记忆和十回合伏笔。
 - 当前代码仍停留在第一阶段最小固定回合，尚未实现 `SeedEvent`、状态分层、事件簿和伏笔。
-- 三份治理文档和两份产品文档当前为未提交工作区改动。
+- `PROGRESS.md` 本次更新用于纠正提交状态，待随下一步操作提交。
 
 ## 下一步
-- 提交并 Review PRD、技术方案、接口文档、契约文档、设计说明和 AGENTS 更新。
+- 推送 `feat/core-minimal-turn` 并打开/更新 PR，先 Review 文档和最小核心回合。
+- 修复现有 ruff/format 问题，恢复 Python 环境后跑通 mypy/pytest。
 - 按契约优先实现 `CoreWorldState` / `DynamicWorldState` / `WorldSnapshot`。
 - 随后实现 `SeedEvent`、`NarrativeDraft`、`RenderedEvent` 和后备渲染。
-- 再实现受控生成内容、事件簿和伏笔，按阶段补充测试与存档迁移。
 
 ## 已知问题
 - `ruff check .` 当前有 4 个问题，`ruff format --check` 有 5 个文件待格式化。
