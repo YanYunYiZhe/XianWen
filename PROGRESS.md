@@ -1,19 +1,19 @@
 # Progress
 
 ## 当前状态
-- Python 3.12.14 环境已恢复，仓库内 `.venv` 可正常使用。
-- `ruff check .`、`ruff format --check .`、`mypy src`、`pytest`、`uv build` 均已通过。
-- `PROGRESS.md` 进度修正已提交：`f03bf61`。
-- 核心 Lint/格式修复已提交：`6c47b5c`。
-- 当前分支 `feat/core-minimal-turn` 领先远端 5 个提交。
-- 代码仍停留在第一阶段最小固定回合。
+- Python 3.12.14 环境正常；ruff、format、mypy、16 个测试和 build 均通过。
+- 当前分支 `feat/world-state-layer`，保留第一阶段 `GameState` 与固定回合接口。
+- 已新增 `CoreWorldState`、`DynamicWorldState`、`WorldSnapshot` 和 `StateTransition`。
+- 已实现状态版本冲突、非法迁移和回合/年份同步校验。
+- 已同步接口文档、契约文档和设计说明。
 
 ## 下一步
-- 推送 `feat/core-minimal-turn` 并更新 PR，Review 文档与最小核心回合。
-- 按契约实现 `CoreWorldState` / `DynamicWorldState` / `WorldSnapshot`。
-- 随后实现 `SeedEvent` / `NarrativeDraft` / `RenderedEvent` 和后备渲染。
+- 推送 `feat/world-state-layer` 并创建 PR，重点 Review 状态权限和迁移边界。
+- 基于 `WorldSnapshot` 实现 `SeedEvent` / `SeedChoice`。
+- 随后实现 `NarrativeDraft` / `RenderedEvent` 和无 AI 后备渲染。
 
 ## 已知问题
-- `ContentGenerationPolicy`、条件 DSL、伏笔阈值和完整状态字段仍未冻结。
-- AI 生成内容的正式 ID、存档规模和回收调度仍需确认。
-- GitHub Actions 真实成功记录尚未在本会话确认。
+- 动态世界记录目前只包含最小字段，内容生成阶段仍需扩展。
+- 世界线切换的专用迁移接口尚未实现。
+- `ContentGenerationPolicy`、条件 DSL 和伏笔阈值仍未冻结。
+- GitHub Actions 本轮真实成功记录尚未确认。

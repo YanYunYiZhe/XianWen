@@ -1,4 +1,4 @@
-"""给核心规则引擎的公共API"""
+"""给核心规则引擎的公共 API。"""
 
 from xianwen.core.engine import (
     InvalidChoiceError,
@@ -8,8 +8,31 @@ from xianwen.core.engine import (
     new_game,
 )
 from xianwen.core.models import Choice, ChoiceEffect, Event, GameState, TurnResult
+from xianwen.core.world_state import (
+    CharacterRecord,
+    CoreWorldState,
+    DynamicWorldState,
+    FactionRecord,
+    GeneratedContentRecord,
+    GeneratedContentStore,
+    InvalidStateTransitionError,
+    ItemRecord,
+    LocationRecord,
+    PluginStateRecord,
+    RelationshipRecord,
+    StandardEffect,
+    StateTransition,
+    StateVersionConflictError,
+    WorldFlag,
+    WorldSnapshot,
+    advance_world,
+    apply_state_transition,
+    build_state_transition,
+    create_initial_world,
+)
 
 __all__ = [
+    # 第一阶段兼容接口
     "Choice",
     "ChoiceEffect",
     "Event",
@@ -20,4 +43,25 @@ __all__ = [
     "apply_choice",
     "get_current_event",
     "new_game",
+    # 世界状态分层接口
+    "CharacterRecord",
+    "CoreWorldState",
+    "DynamicWorldState",
+    "FactionRecord",
+    "GeneratedContentRecord",
+    "GeneratedContentStore",
+    "InvalidStateTransitionError",
+    "ItemRecord",
+    "LocationRecord",
+    "PluginStateRecord",
+    "RelationshipRecord",
+    "StandardEffect",
+    "StateTransition",
+    "StateVersionConflictError",
+    "WorldFlag",
+    "WorldSnapshot",
+    "advance_world",
+    "apply_state_transition",
+    "build_state_transition",
+    "create_initial_world",
 ]
