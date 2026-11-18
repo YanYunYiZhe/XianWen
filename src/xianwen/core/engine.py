@@ -1,8 +1,8 @@
 """核心规则引擎，完整的回合流程
 
-    年份推进由核心统一做（year + 1），插件以后不能自己改年份。
-    非法事件 → InvalidEventError；非法选项 → InvalidChoiceError。
-    不读取、不修改任何全局可变状态。
+年份推进由核心统一做（year + 1），插件以后不能自己改年份。
+非法事件 → InvalidEventError；非法选项 → InvalidChoiceError。
+不读取、不修改任何全局可变状态。
 """
 
 from xianwen.core.base_content import MORNING_TRAINING
@@ -67,6 +67,4 @@ def _resolve_choice(event: Event, choice_id: str) -> Choice:
     for choice in event.choices:
         if choice.id == choice_id:
             return choice
-    raise InvalidChoiceError(
-        f"Unknown choice id {choice_id!r} for event {event.id!r}"
-    )
+    raise InvalidChoiceError(f"Unknown choice id {choice_id!r} for event {event.id!r}")
