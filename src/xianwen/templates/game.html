@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>云州散修 · 第 {{ state.year }} 年</title>
+  </head>
+  <body>
+    <h1>云州散修</h1>
+    <p>第 {{ state.year }} 年 ｜ 修为 {{ state.cultivation }}</p>
+    {% if error %}
+    <p role="alert">{{ error }}</p>
+    {% endif %}
+    {% if result_text %}
+    <section>
+      <h2>本回合结算</h2>
+      <p>{{ result_text }}</p>
+    </section>
+    {% endif %}
+    <section>
+      <h2>当前事件</h2>
+      <p>{{ event.scene_text }}</p>
+      <form method="post" action="/game/choice">
+        <input type="hidden" name="save" value="{{ save_json }}" />
+        <input type="hidden" name="event_id" value="{{ event.id }}" />
+        {% for choice in event.choices %}
+        <button type="submit" name="choice_id" value="{{ choice.id }}">
+          {{ choice.label }}
+        </button>
+        {% endfor %}
+      </form>
+    </section>
+  </body>
+</html>
