@@ -22,7 +22,7 @@ plugins/<plugin-id>/
 
 ## 2. plugin.toml
 
-必须是一个 `[plugin]` 表，且只包含下面四个字段。
+必须是一个 `[plugin]` 表，且只包含下面四个字段。注释和空行允许出现，加载器忽略它们。
 
 | 字段 | 类型 | 规则 |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ api_version = "1"
 
 ## 3. events.toml
 
-文件只包含 `[[events]]` 数组。每个插件至少有一个事件。不认识的表或字段一律拒绝。
+文件的数据只包含 `[[events]]` 数组。每个插件至少有一个事件，同一个文件里可以连续写多个事件。注释和空行允许出现。不认识的表或字段一律拒绝。
 
 每个事件的字段：
 
@@ -83,8 +83,10 @@ effect = { cultivation_delta = 1 }
 ```
 
 - `effect` 里只能有 `cultivation_delta` 这一个键。
-- 值必须是整数。
-- 负数在类型上允许。当前存档要求结算后的修为大于等于 0，作者应使用不会把修为降到 0 以下的值。
+- 值必须是整数，可以为负。加载器不因为负数拒绝插件。
+- 核心 `apply_choice()` 把这个整数直接加到修为上，不把结果夹到 0。
+- 当前存档要求结算后的修为大于等于 0。结果小于 0 时，存档拒绝保存。这是存档失败，不是插件加载失败。
+- 作者自测请使用不会使修为低于 0 的值。
 - 声望、好感、物品、标记、地点切换都不是 `api_version = "1"` 的效果。
 - 新效果以后用新的 `api_version` 增加，不在 `"1"` 里追加字段。
 
@@ -113,10 +115,18 @@ effect = { cultivation_delta = 1 }
 - 事件 ID 的命名空间不属于该插件。
 - 选项数量不是 2 到 4 个。
 - `effect` 缺少 `cultivation_delta`，或出现其他效果字段。
-- 出现本文没有列出的字段或文件内容。
+- 出现本文没有列出的字段或表。注释和空行不算字段。
 - 插件 ID 与已经成功加载的插件重复。后加载的那一个被拒绝，先加载的保留。
 
-错误必须说明插件 ID 和失败原因。不能静默跳过，也不能让这个错误中断进程。
+加载失败时抛出 `PluginLoadError`，不静默跳过：
+
+```python
+class PluginLoadError(Exception):
+    plugin_id: str  # 失败插件的 ID
+    reason: str  # 可读的失败原因
+```
+
+异常文本里必须同时能看到 `plugin_id` 和 `reason`。加载器把该插件的校验失败转成这一个异常。宿主捕获它后继续运行，不让这个插件中断进程。
 
 一个插件被拒绝后，基础事件 `base.morning_training` 仍然可用。其他已经成功加载的插件也保留。
 
@@ -148,9 +158,25 @@ id = "leave"
 fallback_label = "默默绕开，继续赶路"
 fallback_result_text = "你没有打扰旅人，沿着石板路继续往前走，今日修为一无所增。"
 effect = { cultivation_delta = 0 }
+
+[[events]]
+id = "official-example.night_meditation"
+fallback_scene_text = "入夜后灵气转浓，你在院中盘坐。"
+
+[[events.choices]]
+id = "meditate"
+fallback_label = "继续打坐"
+fallback_result_text = "你多守了一炷香，修为又进了一分。"
+effect = { cultivation_delta = 1 }
+
+[[events.choices]]
+id = "sleep"
+fallback_label = "收功就寝"
+fallback_result_text = "你按时歇下，今夜修为没有增加。"
+effect = { cultivation_delta = 0 }
 ```
 
-地点背景写在 `fallback_scene_text` 里。不要写 `location_id`、`location_name` 或 `locations.toml`。
+同一个 `events.toml` 里用下一个 `[[events]]` 开始另一个事件。后一个事件的选项只属于它自己。地点背景写在 `fallback_scene_text` 里。不要写 `location_id`、`location_name` 或 `locations.toml`。
 
 ## 9. 加载器完成前
 
@@ -158,8 +184,9 @@ effect = { cultivation_delta = 0 }
 
 加载器 PR 需要证明：
 
-- 合法插件能转成核心 `Event` 并注册。
-- 缺少 `fallback_scene_text` 时加载失败。
-- 缺少 `fallback_result_text` 时加载失败。
-- 事件 ID 不属于插件命名空间时加载失败。
+- 带注释和空行的合法插件能转成核心 `Event` 并注册。
+- 同一个插件里的多个事件都会注册。
+- 缺少 `fallback_scene_text` 或 `fallback_result_text` 时抛出 `PluginLoadError`。
+- 事件 ID 不属于插件命名空间时抛出 `PluginLoadError`。
+- 失败异常上能读到该插件的 `plugin_id` 和 `reason`。
 - 该插件失败后，`base.morning_training` 仍然可以游玩。
