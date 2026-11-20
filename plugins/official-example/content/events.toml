@@ -1,28 +1,15 @@
-# 插件声明式内容：一个地点背景 + 一个最小事件
-# 字段依据 tech-design-v1.md §11.4 与核心公开模型（Event / Choice / ChoiceEffect）推定，
-# 待 B 的 docs/plugin-spec.md 定稿后对齐。
-
-# ---- 地点背景 ----
-# 第一阶段地点内联在事件上；是否需要独立 locations.toml / 地点表，待契约明确。
 [[events]]
-id = "official-example.meet_traveler"   # 命名空间.事件名，对齐 base.morning_training 规则
-location_id = "qingshi_town"
-location_name = "青石镇"
-location_fallback = "一座依山傍水的凡人小镇，青石板路被岁月磨得发亮，镇外山道通往后山。"
+id = "official-example.meet_traveler"
+fallback_scene_text = "青石镇外，老槐树下有一位披蓑衣的旅人正在歇脚。镇外山道通往后山，竹篮里飘出淡淡的草药香。"
 
-# 基础场景后备文本（AI 扩写失败时使用）
-scene_fallback = "镇外老槐树下，一位披蓑衣的旅人正在歇脚，竹篮里飘出淡淡的草药香。"
+[[events.choices]]
+id = "talk"
+fallback_label = "上前与旅人攀谈几句"
+fallback_result_text = "旅人笑了笑，与你论了几句吐纳之道，你只觉灵台清朗，修为隐隐有所增长。"
+effect = { cultivation_delta = 1 }
 
-  # 选项 1：产生第一阶段核心可处理的标准效果（修为 +1）
-  [[events.choices]]
-  id = "talk"
-  label = "上前与旅人攀谈几句"
-  result_fallback = "旅人笑了笑，与你论了几句吐纳之道，你只觉灵台清朗，修为隐隐有所增长。"
-  effect = { cultivation_delta = 1 }
-
-  # 选项 2：安全离开 / 保守处理，无状态变化
-  [[events.choices]]
-  id = "leave"
-  label = "默默绕开，继续赶路"
-  result_fallback = "你没有打扰旅人，沿着石板路继续往前走，今日修为一无所增。"
-  effect = { cultivation_delta = 0 }
+[[events.choices]]
+id = "leave"
+fallback_label = "默默绕开，继续赶路"
+fallback_result_text = "你没有打扰旅人，沿着石板路继续往前走，今日修为一无所增。"
+effect = { cultivation_delta = 0 }

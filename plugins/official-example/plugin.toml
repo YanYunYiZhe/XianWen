@@ -1,9 +1,5 @@
-# 官方示例插件清单
-# 字段依据 tech-design-v1.md §11.3 推定，待 B 的 docs/plugin-spec.md 定稿后对齐。
-
 [plugin]
-id = "official-example"        # 稳定且唯一的插件 ID
+id = "official-example"
 name = "官方示例插件"
-version = "0.1.0"              # TODO(B): 版本是否要求 semver
-api_version = "1"              # TODO(B): api_version 取值格式（"1" / "1.0" / "v1"）
-# TODO(B): "游戏兼容范围"字段名与 range 语法（§11.3 可选项）尚未定义
+version = "0.1.0"
+api_version = "1"
