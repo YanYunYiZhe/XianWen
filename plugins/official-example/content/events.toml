@@ -1,0 +1,15 @@
+[[events]]
+id = "official-example.meet_traveler"
+fallback_scene_text = "青石镇外，老槐树下有一位披蓑衣的旅人正在歇脚。镇外山道通往后山，竹篮里飘出淡淡的草药香。"
+
+[[events.choices]]
+id = "talk"
+fallback_label = "上前与旅人攀谈几句"
+fallback_result_text = "旅人笑了笑，与你论了几句吐纳之道，你只觉灵台清朗，修为隐隐有所增长。"
+effect = { cultivation_delta = 1 }
+
+[[events.choices]]
+id = "leave"
+fallback_label = "默默绕开，继续赶路"
+fallback_result_text = "你没有打扰旅人，沿着石板路继续往前走，今日修为一无所增。"
+effect = { cultivation_delta = 0 }
