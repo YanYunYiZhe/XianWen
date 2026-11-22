@@ -48,6 +48,12 @@ from xianwen.core.seed import (
     SeedEvent,
     StateRequirement,
 )
+from xianwen.core.seed_turn import (
+    InvalidSeedTurnError,
+    SeedTurnResult,
+    UnsupportedStandardEffectError,
+    apply_seed_choice,
+)
 from xianwen.core.world_state import (
     CharacterRecord,
     CoreWorldState,
@@ -106,6 +112,11 @@ __all__ = [
     "StateRequirement",
     "render_fallback_event",
     "validate_narrative_draft",
+    # 新种子回合
+    "InvalidSeedTurnError",
+    "SeedTurnResult",
+    "UnsupportedStandardEffectError",
+    "apply_seed_choice",
     # 世界状态分层与核心内部迁移接口（非插件 API）
     "CharacterRecord",
     "CoreWorldState",
