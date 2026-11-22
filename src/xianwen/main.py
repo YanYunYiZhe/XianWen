@@ -2,7 +2,10 @@
 
 from fastapi import FastAPI
 
+from xianwen.web.routes import router
+
 app = FastAPI(title="XianWen", version="0.1.0")
+app.include_router(router)
 
 
 @app.get("/health")
