@@ -36,7 +36,9 @@ class Condition:
 
 @dataclass(frozen=True, slots=True)
 class StateRequirement:
-    """种子事件的附加状态门槛。
+    """
+    事件触发前的额外状态门槛（相当于，上面的class是触发条件，这里是一个状态判定）
+    种子事件的附加状态门槛。
 
     所有字段均为可选；当前只校验范围自身是否合法，不读取 GameState。
     """
