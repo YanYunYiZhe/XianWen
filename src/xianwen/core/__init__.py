@@ -26,11 +26,27 @@ from xianwen.core.models import (
     LegacyGameState,
     TurnResult,
 )
+from xianwen.core.narrative import (
+    InvalidNarrativeDraftError,
+    NarrativeChoice,
+    NarrativeDraft,
+    RenderedChoice,
+    RenderedEvent,
+    render_fallback_event,
+    validate_narrative_draft,
+)
 from xianwen.core.player_state import (
     PlayerFlag,
     PlayerState,
     RelationshipValue,
     ReputationValue,
+)
+from xianwen.core.seed import (
+    Condition,
+    NarrativeBrief,
+    SeedChoice,
+    SeedEvent,
+    StateRequirement,
 )
 from xianwen.core.world_state import (
     CharacterRecord,
@@ -77,6 +93,19 @@ __all__ = [
     "PlayerState",
     "RelationshipValue",
     "ReputationValue",
+    # 种子与叙事契约
+    "Condition",
+    "InvalidNarrativeDraftError",
+    "NarrativeBrief",
+    "NarrativeChoice",
+    "NarrativeDraft",
+    "RenderedChoice",
+    "RenderedEvent",
+    "SeedChoice",
+    "SeedEvent",
+    "StateRequirement",
+    "render_fallback_event",
+    "validate_narrative_draft",
     # 世界状态分层与核心内部迁移接口（非插件 API）
     "CharacterRecord",
     "CoreWorldState",
