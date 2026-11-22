@@ -5,20 +5,21 @@ from dataclasses import dataclass
 
 # 游戏状态
 @dataclass(frozen=True, slots=True)
-class GameState:
+class LegacyGameState:
     year: int = 1
     cultivation: int = 0  # 修为值
     ended: bool = False  # 是否结束
 
 
-# 选择效果（给插件平台看的‘标准效果展示’）
+# 第一阶段兼容效果，仅用于 LegacyGameState 固定回合
 @dataclass(frozen=True, slots=True)
 class ChoiceEffect:
     """
-    表示玩家做出某个选择后，对游戏状态产生的影响。
+    旧 LegacyGameState 回合使用的简化效果。
 
-    这是一种插件安全机制。外部插件不能直接修改冻结的 GameState，
-    只能提交 ChoiceEffect，由核心引擎统一处理状态变更。
+    该类型只服务第一阶段兼容接口，不是新架构的标准效果契约。
+    新插件、新种子事件和新回合必须使用 StandardEffect，
+    由核心校验、应用并记录到状态迁移中。
     """
 
     cultivation_delta: int = 0
@@ -32,7 +33,7 @@ class Choice:
     id: str
     label: str  # 显示给玩家的文字
     result_text: str  # 选项结果的文字
-    effect: ChoiceEffect  # 选项效果
+    effect: ChoiceEffect  # 第一阶段兼容效果；新架构使用 StandardEffect
 
 
 # 事件
@@ -52,7 +53,7 @@ class Event:
 class TurnResult:
     """记录一次有效选择执行后的结果快照"""
 
-    state: GameState  # 游戏状态
+    state: LegacyGameState  # 第一阶段兼容游戏状态
     event_id: str  # 事件ID
     choice_id: str  # 选项ID
     result_text: str  # 需要展示给玩家的结果文字

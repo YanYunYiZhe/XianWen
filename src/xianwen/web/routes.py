@@ -17,7 +17,7 @@ from xianwen.core.engine import (
     get_current_event,
     new_game,
 )
-from xianwen.core.models import GameState
+from xianwen.core.models import LegacyGameState
 from xianwen.web.save import SaveFormatError, dump_save, load_save
 
 TEMPLATES_DIR = Path(__file__).resolve().parent.parent / "templates"
@@ -66,7 +66,7 @@ def submit_choice(
 
 def _render_game(
     request: Request,
-    state: GameState,
+    state: LegacyGameState,
     *,
     result_text: str | None = None,
     error: str | None = None,
