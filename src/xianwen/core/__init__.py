@@ -29,6 +29,20 @@ from xianwen.core.generation import (
     EventDraft,
     LocationDraft,
 )
+from xianwen.core.generation_commit import (
+    EmptyGeneratedContentError,
+    GeneratedContentConflictError,
+    commit_generated_content,
+)
+from xianwen.core.generation_validation import (
+    ContentValidationError,
+    ValidatedCharacter,
+    ValidatedChoice,
+    ValidatedEvent,
+    ValidatedGeneratedContent,
+    ValidatedLocation,
+    validate_content_generation,
+)
 from xianwen.core.models import (
     Choice,
     ChoiceEffect,
@@ -118,6 +132,16 @@ __all__ = [
     "EffectDraft",
     "EventDraft",
     "LocationDraft",
+    "ContentValidationError",
+    "EmptyGeneratedContentError",
+    "GeneratedContentConflictError",
+    "ValidatedCharacter",
+    "ValidatedChoice",
+    "ValidatedEvent",
+    "ValidatedGeneratedContent",
+    "ValidatedLocation",
+    "commit_generated_content",
+    "validate_content_generation",
     # 种子与叙事契约
     "Condition",
     "InvalidNarrativeDraftError",
