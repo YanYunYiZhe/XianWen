@@ -31,7 +31,11 @@ class PlayerFlag:
 
 @dataclass(frozen=True, slots=True)
 class PlayerState:
-    """玩家直接拥有的数值、关系、物品和叙事标签。"""
+    """玩家直接拥有的数值、关系、物品和叙事标签。
+
+    PlayerState 只能由核心高层回合结算函数与世界快照一起原子更新。
+    插件、AI 和 Web 不得单独构造并替换该对象。
+    """
 
     identity: str = "云州散修"  # 出身与身份
     realm: str = "练气一层"  # 当前境界
@@ -47,7 +51,7 @@ class PlayerState:
     # 与关键人物的好感；同一人物只允许一条记录
     relationships: tuple[RelationshipValue, ...] = ()
 
-    # 持有物；当前直接复用动态世界中的 ItemRecord
+    # 玩家持有物；同一物品不得同时在 DynamicWorldState.items 中重复归属
     items: tuple[ItemRecord, ...] = ()
 
     # 当前地点 ID；新游戏可为空，表示尚未进入具体地点
