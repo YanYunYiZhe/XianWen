@@ -19,6 +19,16 @@ from xianwen.core.foreshadow import (
     ForeshadowRecord,
 )
 from xianwen.core.game_state import GameState
+from xianwen.core.generation import (
+    CharacterDraft,
+    ChoiceDraft,
+    ContentGenerationDraft,
+    ContentGenerationPolicy,
+    EffectBound,
+    EffectDraft,
+    EventDraft,
+    LocationDraft,
+)
 from xianwen.core.models import (
     Choice,
     ChoiceEffect,
@@ -99,6 +109,15 @@ __all__ = [
     "PlayerState",
     "RelationshipValue",
     "ReputationValue",
+    # 受控内容生成
+    "CharacterDraft",
+    "ChoiceDraft",
+    "ContentGenerationDraft",
+    "ContentGenerationPolicy",
+    "EffectBound",
+    "EffectDraft",
+    "EventDraft",
+    "LocationDraft",
     # 种子与叙事契约
     "Condition",
     "InvalidNarrativeDraftError",
