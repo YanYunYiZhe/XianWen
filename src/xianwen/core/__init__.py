@@ -19,6 +19,31 @@ from xianwen.core.foreshadow import (
     ForeshadowRecord,
 )
 from xianwen.core.game_state import GameState
+from xianwen.core.generation import (
+    CharacterDraft,
+    ChoiceDraft,
+    ContentGenerationDraft,
+    ContentGenerationPolicy,
+    EffectBound,
+    EffectDraft,
+    EventDraft,
+    LocationDraft,
+)
+from xianwen.core.generation_commit import (
+    EmptyGeneratedContentError,
+    GeneratedContentConflictError,
+    commit_generated_content,
+)
+from xianwen.core.generation_validation import (
+    ContentValidationError,
+    ValidatedCharacter,
+    ValidatedChoice,
+    ValidatedEvent,
+    ValidatedGeneratedContent,
+    ValidatedLocation,
+    validate_content_generation,
+    validated_event_to_seed_event,
+)
 from xianwen.core.models import (
     Choice,
     ChoiceEffect,
@@ -26,11 +51,33 @@ from xianwen.core.models import (
     LegacyGameState,
     TurnResult,
 )
+from xianwen.core.narrative import (
+    InvalidNarrativeDraftError,
+    NarrativeChoice,
+    NarrativeDraft,
+    RenderedChoice,
+    RenderedEvent,
+    render_fallback_event,
+    validate_narrative_draft,
+)
 from xianwen.core.player_state import (
     PlayerFlag,
     PlayerState,
     RelationshipValue,
     ReputationValue,
+)
+from xianwen.core.seed import (
+    Condition,
+    NarrativeBrief,
+    SeedChoice,
+    SeedEvent,
+    StateRequirement,
+)
+from xianwen.core.seed_turn import (
+    InvalidSeedTurnError,
+    SeedTurnResult,
+    UnsupportedStandardEffectError,
+    apply_seed_choice,
 )
 from xianwen.core.world_state import (
     CharacterRecord,
@@ -77,6 +124,44 @@ __all__ = [
     "PlayerState",
     "RelationshipValue",
     "ReputationValue",
+    # 受控内容生成
+    "CharacterDraft",
+    "ChoiceDraft",
+    "ContentGenerationDraft",
+    "ContentGenerationPolicy",
+    "EffectBound",
+    "EffectDraft",
+    "EventDraft",
+    "LocationDraft",
+    "ContentValidationError",
+    "EmptyGeneratedContentError",
+    "GeneratedContentConflictError",
+    "ValidatedCharacter",
+    "ValidatedChoice",
+    "ValidatedEvent",
+    "ValidatedGeneratedContent",
+    "ValidatedLocation",
+    "commit_generated_content",
+    "validate_content_generation",
+    "validated_event_to_seed_event",
+    # 种子与叙事契约
+    "Condition",
+    "InvalidNarrativeDraftError",
+    "NarrativeBrief",
+    "NarrativeChoice",
+    "NarrativeDraft",
+    "RenderedChoice",
+    "RenderedEvent",
+    "SeedChoice",
+    "SeedEvent",
+    "StateRequirement",
+    "render_fallback_event",
+    "validate_narrative_draft",
+    # 新种子回合
+    "InvalidSeedTurnError",
+    "SeedTurnResult",
+    "UnsupportedStandardEffectError",
+    "apply_seed_choice",
     # 世界状态分层与核心内部迁移接口（非插件 API）
     "CharacterRecord",
     "CoreWorldState",

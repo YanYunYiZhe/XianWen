@@ -1,18 +1,19 @@
 # Progress
 
 ## 当前状态
-- PR 分支 `feat/align-game-state` 已合并最新 `origin/develop`。
-- Web 路由与第一版存档已统一使用 `LegacyGameState`，与新 `GameState` 明确区分。
-- PR #2 的 5 条 Review 边界说明已保留，接口和契约文档冲突已合并。
-- ruff、format、mypy、28 个测试和 build 均通过。
+- 草稿分支 `feat/seed-contract-draft` 已 rebase 到最新 `develop`，暂不合并。
+- 已实现受控内容草案、策略结构、确定性校验和正式 ID 分配。
+- 已实现 ValidatedGeneratedContent 到 GeneratedContentStore 的原子登记。
+- ruff、format、mypy、66 个测试和 build 均通过。
 
 ## 下一步
-- 推送 PR #2 更新并请 B 复核。
-- B 复核通过且 CI 全绿后，将 PR #2 合并到 `develop`。
-- 从最新 `develop` 创建 `feat/seed-contract`。
+- 实现候选种子筛选，从基础与生成内容中选出 2-3 个候选。
+- 接入 AI Mock，返回 ContentGenerationDraft 并验证失败回退。
+- 补充存档序列化与恢复测试。
 
 ## 已知问题
-- 玩家状态与世界快照的统一高层原子提交接口尚未实现。
-- 插件专用公开 API 尚未隔离，计划由 `feat/plugin-contract` 完成。
-- 第一版 Web 仍使用 `LegacyGameState`，新 `GameState` 的 Web 对接尚未迁移。
-- 世界线专用迁移接口尚未实现。
+- 条件 DSL 和 `StateRequirement` 求值器尚未实现。
+- `StandardEffect` 白名单和数值边界尚未冻结。
+- 当前仅支持 cultivation_delta 和 luck_delta。
+- 生成事件已能转换为 SeedEvent，下一步实现候选种子筛选。
+- 新 `GameState` 的 Web 对接和后续存档迁移尚未完成。
