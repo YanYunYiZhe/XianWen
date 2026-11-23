@@ -7,6 +7,8 @@
 
 from dataclasses import dataclass
 
+from xianwen.core.seed import Condition, NarrativeBrief, StateRequirement
+
 
 def _require_text(value: str, field_name: str) -> None:
     """拒绝空白 ID 和文本，避免生成无法追踪的内容。"""
@@ -42,12 +44,15 @@ class ChoiceDraft:
     local_id: str  # 本次 AI 响应内的临时选项 ID
     label: str  # 选项显示文字
     result_text: str  # 选项结果文字
+    result_hint: str | None = None  # 给 SeedChoice 的结果扩写提示；为空时回退到结果文字
     effects: tuple[EffectDraft, ...] = ()  # 选项携带的未校验效果提案
 
     def __post_init__(self) -> None:
         _require_text(self.local_id, "choice_draft.local_id")
         _require_text(self.label, "choice_draft.label")
         _require_text(self.result_text, "choice_draft.result_text")
+        if self.result_hint is not None:
+            _require_text(self.result_hint, "choice_draft.result_hint")
 
 
 @dataclass(frozen=True, slots=True)
@@ -61,10 +66,21 @@ class EventDraft:
     local_id: str  # 本次 AI 响应内的临时事件 ID
     derived_from_seed_id: str | None  # 派生来源种子 ID；无来源时可为空
     title: str  # 事件标题
-    scene_text: str  # 事件场景文字
-    location_id: str | None  # 发生地点；可使用临时或已有地点 ID
+    scene_text: str  # 事件场景文字；校验后会作为后备场景文字
+    location_id: str | None  # 实际发生地点；可使用临时或已有地点 ID
     character_ids: tuple[str, ...]  # 涉及人物；可使用临时或已有人物 ID
     choices: tuple[ChoiceDraft, ...]  # 新事件包含的选项提案
+
+    category: str | None = None  # 事件分类；为空时继承来源种子
+    worldline_id: str | None = None  # 所属世界线；为空时继承来源种子
+    stage: str | None = None  # 世界线阶段或事件阶段；为空时继承来源种子
+    conditions: tuple[Condition, ...] = ()  # 触发条件；为空时继承来源种子
+    weight: int | None = None  # 候选权重；为空时继承来源种子
+    location_ids: tuple[str, ...] = ()  # 允许触发地点；为空时继承来源种子
+    time_slots: tuple[str, ...] = ()  # 允许触发时间段；为空时继承来源种子
+    required_state: StateRequirement | None = None  # 状态门槛；为空时继承来源种子
+    ai_prompt: str | None = None  # AI 扩写提示；为空时继承来源种子
+    narrative_brief: NarrativeBrief | None = None  # 剧情简报；为空时继承来源种子
 
     def __post_init__(self) -> None:
         _require_text(self.local_id, "event_draft.local_id")
@@ -78,9 +94,23 @@ class EventDraft:
             )
         if self.location_id is not None:
             _require_text(self.location_id, "event_draft.location_id")
+        if self.category is not None:
+            _require_text(self.category, "event_draft.category")
+        if self.worldline_id is not None:
+            _require_text(self.worldline_id, "event_draft.worldline_id")
+        if self.stage is not None:
+            _require_text(self.stage, "event_draft.stage")
+        if self.weight is not None and self.weight < 0:
+            raise ValueError("event_draft.weight must not be negative")
+        if self.ai_prompt is not None:
+            _require_text(self.ai_prompt, "event_draft.ai_prompt")
 
         for character_id in self.character_ids:
             _require_text(character_id, "event_draft.character_ids")
+        for location_id in self.location_ids:
+            _require_text(location_id, "event_draft.location_ids")
+        for time_slot in self.time_slots:
+            _require_text(time_slot, "event_draft.time_slots")
 
         if len(set(self.character_ids)) != len(self.character_ids):
             raise ValueError("event_draft character_ids must be unique")

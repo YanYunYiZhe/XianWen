@@ -42,6 +42,7 @@ from xianwen.core.generation_validation import (
     ValidatedGeneratedContent,
     ValidatedLocation,
     validate_content_generation,
+    validated_event_to_seed_event,
 )
 from xianwen.core.models import (
     Choice,
@@ -142,6 +143,7 @@ __all__ = [
     "ValidatedLocation",
     "commit_generated_content",
     "validate_content_generation",
+    "validated_event_to_seed_event",
     # 种子与叙事契约
     "Condition",
     "InvalidNarrativeDraftError",

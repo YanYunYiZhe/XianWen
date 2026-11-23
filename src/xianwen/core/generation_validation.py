@@ -14,7 +14,13 @@ from xianwen.core.generation import (
     EventDraft,
     LocationDraft,
 )
-from xianwen.core.seed import SeedEvent
+from xianwen.core.seed import (
+    Condition,
+    NarrativeBrief,
+    SeedChoice,
+    SeedEvent,
+    StateRequirement,
+)
 from xianwen.core.world_state import StandardEffect, WorldSnapshot
 
 # 当前最小实现支持的数值型标准效果。
@@ -56,8 +62,9 @@ class ValidatedChoice:
     """已通过校验并分配正式选项 ID 的新选项。"""
 
     choice_id: str  # 核心分配的正式选项 ID
-    label: str  # 选项显示文字
-    result_text: str  # 选项结果文字
+    label: str  # 选项显示文字；转换为 SeedChoice 时作为 fallback_label
+    result_text: str  # 选项结果文字；转换为 SeedChoice 时作为 fallback_result_text
+    result_hint: str  # 结果扩写提示；转换为 SeedChoice 时保留
     effects: tuple[StandardEffect, ...]  # 已转换并校验的标准效果
 
 
@@ -68,10 +75,22 @@ class ValidatedEvent:
     event_id: str  # 核心分配的正式事件 ID
     derived_from_seed_id: str  # 派生来源种子 ID
     title: str  # 事件标题
-    scene_text: str  # 事件场景文字
+    scene_text: str  # 事件场景文字；同时作为后备场景文字
     location_id: str | None  # 已重写为正式 ID 的发生地点
     character_ids: tuple[str, ...]  # 已重写为正式 ID 的涉及人物
     choices: tuple[ValidatedChoice, ...]  # 已校验选项集合
+
+    category: str  # 事件分类
+    worldline_id: str | None  # 所属世界线
+    stage: str | None  # 世界线阶段或事件阶段
+    conditions: tuple[Condition, ...]  # 触发条件
+    weight: int  # 候选权重
+    location_ids: tuple[str, ...]  # 允许触发地点
+    time_slots: tuple[str, ...]  # 允许触发时间段
+    required_state: StateRequirement | None  # 状态门槛
+    fallback_scene_text: str  # 无 AI 时使用的场景文字
+    ai_prompt: str  # AI 扩写提示
+    narrative_brief: NarrativeBrief  # 剧情简报
 
 
 @dataclass(frozen=True, slots=True)
@@ -157,7 +176,7 @@ def validate_content_generation(
         location_map,
         character_map,
         event_map,
-        trusted_seed.id,
+        trusted_seed,
     )
 
     _validate_total_effect_budget(events, policy)
@@ -330,7 +349,7 @@ def _validate_events(
     location_map: dict[str, str],
     character_map: dict[str, str],
     event_map: dict[str, str],
-    seed_id: str,
+    trusted_seed: SeedEvent,
 ) -> tuple[ValidatedEvent, ...]:
     """校验事件引用、选项和效果。"""
     validated: list[ValidatedEvent] = []
@@ -356,12 +375,33 @@ def _validate_events(
         validated.append(
             ValidatedEvent(
                 event_id=event_map[event.local_id],
-                derived_from_seed_id=_require_derived_seed(event, seed_id),
+                derived_from_seed_id=_require_derived_seed(event, trusted_seed.id),
                 title=event.title,
                 scene_text=event.scene_text,
                 location_id=location_id,
                 character_ids=character_ids,
                 choices=choices,
+                category=event.category or trusted_seed.category,
+                worldline_id=(
+                    event.worldline_id
+                    if event.worldline_id is not None
+                    else trusted_seed.worldline_id
+                ),
+                stage=(event.stage if event.stage is not None else trusted_seed.stage),
+                conditions=event.conditions or trusted_seed.conditions,
+                weight=(
+                    event.weight if event.weight is not None else trusted_seed.weight
+                ),
+                location_ids=event.location_ids or trusted_seed.location_ids,
+                time_slots=event.time_slots or trusted_seed.time_slots,
+                required_state=(
+                    event.required_state
+                    if event.required_state is not None
+                    else trusted_seed.required_state
+                ),
+                fallback_scene_text=event.scene_text,
+                ai_prompt=event.ai_prompt or trusted_seed.ai_prompt,
+                narrative_brief=event.narrative_brief or trusted_seed.narrative_brief,
             )
         )
     return tuple(validated)
@@ -414,6 +454,7 @@ def _validate_choices(
                 choice_id=f"{event_id}.choice.{choice.local_id}",
                 label=choice.label,
                 result_text=choice.result_text,
+                result_hint=choice.result_hint or choice.result_text,
                 effects=effects,
             )
         )
@@ -482,3 +523,35 @@ def _validate_total_effect_budget(
 
     if total > policy.max_total_effect_per_turn:
         raise ContentValidationError("total effect budget exceeded")
+
+
+def validated_event_to_seed_event(event: ValidatedEvent) -> SeedEvent:
+    """把已验证生成事件转换为统一 SeedEvent。
+
+    这是基础内容、插件内容和 AI 生成内容共用同一候选池契约的关键入口。
+    """
+    return SeedEvent(
+        id=event.event_id,
+        category=event.category,
+        worldline_id=event.worldline_id,
+        stage=event.stage,
+        conditions=event.conditions,
+        weight=event.weight,
+        location_ids=event.location_ids,
+        time_slots=event.time_slots,
+        required_state=event.required_state,
+        fallback_scene_text=event.fallback_scene_text,
+        ai_prompt=event.ai_prompt,
+        narrative_brief=event.narrative_brief,
+        choices=tuple(
+            SeedChoice(
+                id=choice.choice_id,
+                fallback_label=choice.label,
+                result_hint=choice.result_hint,
+                fallback_result_text=choice.result_text,
+                effects=choice.effects,
+            )
+            for choice in event.choices
+        ),
+        source_plugin_id=None,
+    )
