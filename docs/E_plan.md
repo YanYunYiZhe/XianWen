@@ -19,7 +19,7 @@ E 负责三件事，按优先级推进：
 铁律（与全组一致）：
 
 > 规则是世界的事实来源，AI 是世界的表达层。  
-> AI 只扩写剧情文本；数值、死亡、突破、结局一律由代码判定。
+> 阶段 4 首轮先做剧情扩写；数值、死亡、突破、结局一律由代码判定。完整 MVP 允许 AI 提交结构化内容提案，由核心校验、分配正式 ID、登记并保存，详见《契约文档》。
 
 ---
 
@@ -105,7 +105,7 @@ tests/test_smoke.py
 3. 最小入口 + `GET /health`（固定 JSON 状态）。
 4. 冒烟测试：`xianwen` 可导入；`/health` 返回 200。
 5. 在 `pyproject.toml` 配置 ruff / mypy / pytest。
-6. GitHub Actions（PR + `master` 推送）执行：
+6. GitHub Actions（目标为 `develop` 或 `master` 的 PR，以及这两个分支的 push）执行：
 
    ```powershell
    uv sync --frozen
@@ -124,7 +124,7 @@ tests/test_smoke.py
 
 - 上述质量命令本地退出码均为 0。
 - GitHub Actions 至少触发一次；成功/失败如实记入 `PROGRESS.md`。
-- 他人可从最新 `master` 拉分支并直接跑测试。
+- 他人可从最新 `develop` 拉分支并直接跑测试。
 - 仓库无 `.env` / Key。
 
 #### 第 1 天协作节奏
@@ -316,7 +316,7 @@ E 牵头维护测试矩阵，推动各作者补齐本模块用例；E 本人至�
 
 ## 8. 今日立刻执行（阶段 1 开工清单）
 
-1. 从最新 `master` 建分支 `chore/project-foundation`。
+1. 从最新 `develop` 创建后续工作分支。工程基线原分支 `chore/project-foundation` 的历史合并见工作记录。
 2. 用 `uv` 初始化项目与 `src/xianwen`。
 3. 写 `main.py` 的 `/health` 与 `tests/test_smoke.py`。
 4. 配齐 ruff / mypy / pytest 与 `.github/workflows/ci.yml`。
@@ -331,16 +331,15 @@ E 牵头维护测试矩阵，推动各作者补齐本模块用例；E 本人至�
 
 ### 当前状态
 
-- 阶段 1（工程与 CI 基线）代码已完成；本地质量命令退出码均为 0。
-- 第一阶段仍不接入真实 AI。
-- CI 已配置，待推送后才有 Actions 真实记录。
+- 阶段 1 工程基线已合并，历史 CI 结果待核验。
+- 阶段 2 本地实现及验证通过，待 CI 和 Review 验收。回合测试覆盖无 Key 和禁止套接字连接时的推进。
 
 ### 下一步
 
-- 开 PR `chore/project-foundation`，请 D Review 并合并。
-- 合并后进入阶段 2（Web 夹具 / 审 D）；依赖 A/D 进度。
+- 推送 `feat/e-stage2-web-fixtures` → `develop`。
+- B/C 就绪后进入阶段 3（插件测试进 CI）。
 
 ### 阻塞
 
-- 尚未推送，无 GitHub Actions 成功证明。
+- 插件闭环未齐前不做阶段 3。
 - 主模型预设待阶段 4 实测锁定。
