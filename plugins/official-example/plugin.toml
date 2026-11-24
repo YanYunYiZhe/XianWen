@@ -1,0 +1,5 @@
+[plugin]
+id = "official-example"
+name = "官方示例插件"
+version = "0.1.0"
+api_version = "1"
