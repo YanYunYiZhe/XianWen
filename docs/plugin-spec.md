@@ -1,13 +1,15 @@
 # XianWen 插件契约 v1
 
 - 状态：第一周有效
-- 更新时间：2026-11-20
-- 适用代码：`develop` 上已经合并的 `Event`、`Choice`、`ChoiceEffect`
+- 更新时间：2026-11-24
+- 适用代码：`develop` 上的 `LegacyGameState` 兼容回合，以及 `Event`、`Choice`、`ChoiceEffect`
 - 读者：插件作者和后续的加载器实现
 
-本文是第一周纯数据插件的文件格式。加载器按本文把插件事件转换成核心公开类型。插件不读取、不修改 `GameState`。
+本文是第一周纯数据插件的文件格式。v1 只服务 `LegacyGameState` 兼容回合，效果只使用 `ChoiceEffect.cultivation_delta`。接入 `StandardEffect` 留到下一版 `api_version`。
 
-`docs/契约文档.md` 里的 `SeedEvent`、`SeedChoice` 和 `StandardEffect` 是后续契约。第一周加载器不读取那些字段。地点、声望、好感、物品和 `PlayerState.location_id` 等 PR #2 合并并且边界确认后再改本文。
+加载器按本文把插件事件转换成核心公开类型。插件不读取、不修改 `GameState`。
+
+`docs/契约文档.md` 里的 `SeedEvent`、`SeedChoice` 和 `StandardEffect` 是后续契约。第一周加载器不读取那些字段。地点、声望、好感、物品和 `PlayerState.location_id` 不属于 `api_version = "1"`。
 
 ## 1. 插件目录
 
