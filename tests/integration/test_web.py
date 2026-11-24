@@ -3,16 +3,14 @@
 import html
 import json
 import re
+import socket
 
 import httpx
 import pytest
 from fastapi.testclient import TestClient
 
 from xianwen.core.engine import new_game
-from xianwen.main import app
 from xianwen.web.save import SaveFormatError, dump_save, load_save
-
-client = TestClient(app)
 
 EVENT_ID = "base.morning_training"
 
@@ -23,7 +21,7 @@ def _hidden_save(page: str) -> str:
     return html.unescape(match.group(1))
 
 
-def _choose(page: str, choice_id: str) -> httpx.Response:
+def _choose(client: TestClient, page: str, choice_id: str) -> httpx.Response:
     return client.post(
         "/game/choice",
         data={
@@ -34,13 +32,13 @@ def _choose(page: str, choice_id: str) -> httpx.Response:
     )
 
 
-def test_index_page_has_start_button() -> None:
+def test_index_page_has_start_button(client: TestClient) -> None:
     response = client.get("/")
     assert response.status_code == 200
     assert "开始游戏" in response.text
 
 
-def test_start_game_shows_first_turn() -> None:
+def test_start_game_shows_first_turn(client: TestClient) -> None:
     response = client.post("/game/start")
     assert response.status_code == 200
     assert "第 1 年" in response.text
@@ -48,30 +46,45 @@ def test_start_game_shows_first_turn() -> None:
     assert "清晨灵气尚可" in response.text
 
 
-def test_cultivate_advances_year_and_cultivation() -> None:
-    page = client.post("/game/start").text
-    response = _choose(page, "cultivate")
+def test_cultivate_advances_without_key_or_network(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    connection_attempts: list[object] = []
+
+    def reject_connection(_socket: socket.socket, address: object) -> int:
+        connection_attempts.append(address)
+        raise OSError("Network connections are disabled during this test")
+
+    # The TestClient event loop is already running and requests use ASGI in-process.
+    monkeypatch.setattr(socket.socket, "connect", reject_connection)
+    monkeypatch.setattr(socket.socket, "connect_ex", reject_connection)
+
+    start = client.post("/game/start")
+    assert start.status_code == 200
+    assert "第 1 年" in start.text
+    response = _choose(client, start.text, "cultivate")
     assert response.status_code == 200
     assert "第 2 年" in response.text
     assert "修为 1" in response.text
+    assert not connection_attempts
 
 
-def test_rest_advances_year_only() -> None:
+def test_rest_advances_year_only(client: TestClient) -> None:
     page = client.post("/game/start").text
-    response = _choose(page, "rest")
+    response = _choose(client, page, "rest")
     assert response.status_code == 200
     assert "第 2 年" in response.text
     assert "修为 0" in response.text
 
 
-def test_invalid_choice_returns_error() -> None:
+def test_invalid_choice_returns_error(client: TestClient) -> None:
     page = client.post("/game/start").text
-    response = _choose(page, "meditate")
+    response = _choose(client, page, "meditate")
     assert response.status_code == 400
     assert "无效" in response.text
 
 
-def test_broken_save_returns_error() -> None:
+def test_broken_save_returns_error(client: TestClient) -> None:
     response = client.post(
         "/game/choice",
         data={"save": "{not json}", "event_id": EVENT_ID, "choice_id": "cultivate"},
