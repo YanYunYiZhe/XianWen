@@ -1,5 +1,11 @@
-"""给核心规则引擎的公共 API。"""
+"""核心规则引擎的内部 API。
 
+本模块不是插件 SDK。插件只能提交 StandardEffect 等内容提案；
+StateTransition、build_state_transition、apply_state_transition 和
+advance_world 仅供核心内部使用。插件隔离由 feat/plugin-contract 完成。
+"""
+
+from xianwen.core.chronicle import ChronicleEntry
 from xianwen.core.engine import (
     InvalidChoiceError,
     InvalidEventError,
@@ -7,7 +13,25 @@ from xianwen.core.engine import (
     get_current_event,
     new_game,
 )
-from xianwen.core.models import Choice, ChoiceEffect, Event, GameState, TurnResult
+from xianwen.core.foreshadow import (
+    ForeshadowAssessment,
+    ForeshadowBook,
+    ForeshadowRecord,
+)
+from xianwen.core.game_state import GameState
+from xianwen.core.models import (
+    Choice,
+    ChoiceEffect,
+    Event,
+    LegacyGameState,
+    TurnResult,
+)
+from xianwen.core.player_state import (
+    PlayerFlag,
+    PlayerState,
+    RelationshipValue,
+    ReputationValue,
+)
 from xianwen.core.world_state import (
     CharacterRecord,
     CoreWorldState,
@@ -36,14 +60,24 @@ __all__ = [
     "Choice",
     "ChoiceEffect",
     "Event",
-    "GameState",
     "InvalidChoiceError",
     "InvalidEventError",
+    "LegacyGameState",
     "TurnResult",
     "apply_choice",
     "get_current_event",
     "new_game",
-    # 世界状态分层接口
+    # 玩家与局状态
+    "ChronicleEntry",
+    "ForeshadowAssessment",
+    "ForeshadowBook",
+    "ForeshadowRecord",
+    "GameState",
+    "PlayerFlag",
+    "PlayerState",
+    "RelationshipValue",
+    "ReputationValue",
+    # 世界状态分层与核心内部迁移接口（非插件 API）
     "CharacterRecord",
     "CoreWorldState",
     "DynamicWorldState",

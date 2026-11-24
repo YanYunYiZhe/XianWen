@@ -1,20 +1,18 @@
 # Progress
 
 ## 当前状态
-- Python 3.12.14 环境正常；ruff、format、mypy、16 个测试和 build 均通过。
-- `develop` 已创建、推送到 `origin` 并设置上游跟踪。
-- 功能分支默认从 `develop` 创建并合并回 `develop`。
-- `master` 仅用于经过 Review 和 CI 验证的稳定发布。
-- CI 已覆盖 `develop` 和 `master` 的推送及 PR。
-- 世界状态分层代码已提交，第一阶段接口仍保持可运行。
+- 集成分支 `develop` 已含工程基线、最小核心、最小 Web 闭环。
+- E 阶段 2 的本地同步、Lint、格式、类型检查、28 个测试和构建均通过；Web 测试验证无 Key、零出站连接时仍能推进回合。
+- E 记录见 `docs/E_record.md`；D 的 Web PR #3 已关联到合并后复查记录。
+- 工作分支：`feat/e-stage2-web-fixtures`（待推送 / PR）。
 
 ## 下一步
-- 从最新 `develop` 创建后续功能分支。
-- 基于 `WorldSnapshot` 实现 `SeedEvent` / `SeedChoice`。
-- 随后实现 `NarrativeDraft` / `RenderedEvent` 和无 AI 后备渲染。
+- 开向 `develop` 的 E 阶段 2 PR，请 D 复核并补记 GitHub Actions 结果。
+- B/C 完成插件加载与样例后，E 进入阶段 3（插件测试纳入 CI）。
+- Web 从 `LegacyGameState` 迁到新 `GameState` 仍为后续独立改动。
 
 ## 已知问题
-- 本轮 GitHub Actions 真实执行结果尚未确认。
-- 动态世界记录目前只包含最小字段，内容生成阶段仍需扩展。
-- 世界线切换的专用迁移接口尚未实现。
-- `ContentGenerationPolicy`、条件 DSL 和伏笔阈值仍未冻结。
+- 阶段 1 历史 CI、阶段 2 CI 和 D/E Review 闭环待核实。
+- 插件公开 API / 加载器与示例插件尚未完全并入 develop。
+- LICENSE、DESIGN.docx、发行物、主模型预设未完成。
+- 玩家/世界原子提交与世界线迁移接口仍待后续 PR。

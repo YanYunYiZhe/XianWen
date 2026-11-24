@@ -97,7 +97,12 @@ class WorldFlag:
 
 @dataclass(frozen=True, slots=True)
 class ItemRecord:
-    """动态世界中的关键物品。"""
+    """物品快照。
+
+    玩家持有物位于 PlayerState.items；世界关键物品、公共物品和
+    掉落物位于 DynamicWorldState.items。同一物品同一时刻只能有一个
+    权威归属。
+    """
 
     id: str
     name: str
@@ -164,6 +169,7 @@ class DynamicWorldState:
     relationships: tuple[RelationshipRecord, ...] = ()
     factions: tuple[FactionRecord, ...] = ()
     flags: tuple[WorldFlag, ...] = ()
+    # 世界中的关键、公共或掉落物品，不包含玩家背包中的持有物
     items: tuple[ItemRecord, ...] = ()
     plugin_states: tuple[PluginStateRecord, ...] = ()
     generated_content: GeneratedContentStore = field(
@@ -223,9 +229,11 @@ class WorldSnapshot:
 @dataclass(frozen=True, slots=True)
 class StandardEffect:
     """
-    状态迁移中记录的标准效果。
+    状态迁移中记录的标准效果提案。
 
     当前只记录效果数据，白名单和数值范围校验在内容生成阶段实现。
+    插件只能提交 StandardEffect，不能提交 PlayerState、WorldSnapshot
+    或 StateTransition。AddItem/RemoveItem 类效果必须声明物品归属。
     """
 
     effect_type: str
@@ -242,10 +250,12 @@ class StandardEffect:
 @dataclass(frozen=True, slots=True)
 class StateTransition:
     """
-    核心提交一次状态变化的原子请求。
+    核心构造的一次状态变化原子请求，不是插件 API。
 
     expected_version 必须等于提交方看到的状态版本。
-    new_core 必须由核心构造，不能由 Web、AI 或插件自行提交。
+    new_core 和 new_dynamic 只能由核心构造；插件、AI 和 Web
+    只能提交 StandardEffect 提案，不能直接提交本对象。
+    source 仅记录提案来源，不代表外部模块有权提交状态。
     """
 
     expected_version: int

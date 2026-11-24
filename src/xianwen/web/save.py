@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from xianwen.core.models import GameState
+from xianwen.core.models import LegacyGameState
 
 SAVE_SCHEMA_VERSION = 1
 
@@ -39,7 +39,7 @@ class SaveDocument(BaseModel):
     usage: dict[str, int] = Field(default_factory=dict)
 
 
-def build_save(state: GameState) -> SaveDocument:
+def build_save(state: LegacyGameState) -> SaveDocument:
     """把核心状态包装成可保存的存档信封。"""
     return SaveDocument(
         schema_version=SAVE_SCHEMA_VERSION,
@@ -51,21 +51,21 @@ def build_save(state: GameState) -> SaveDocument:
     )
 
 
-def restore_state(save: SaveDocument) -> GameState:
+def restore_state(save: SaveDocument) -> LegacyGameState:
     """把存档信封还原为核心状态。"""
-    return GameState(
+    return LegacyGameState(
         year=save.game.year,
         cultivation=save.game.cultivation,
         ended=save.game.ended,
     )
 
 
-def dump_save(state: GameState) -> str:
+def dump_save(state: LegacyGameState) -> str:
     """序列化为 JSON 字符串，供页面隐藏字段或浏览器本地存储使用。"""
     return build_save(state).model_dump_json()
 
 
-def load_save(text: str) -> GameState:
+def load_save(text: str) -> LegacyGameState:
     """从 JSON 字符串恢复状态；非法存档抛出 SaveFormatError。"""
     try:
         payload: object = json.loads(text)
