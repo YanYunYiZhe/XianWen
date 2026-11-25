@@ -50,12 +50,16 @@ def load_plugin(
 
 
 def _read_toml(path: Path, plugin_id: str) -> dict[str, Any]:
-    if not path.is_file():
-        raise PluginLoadError(plugin_id, f"missing {path.name}")
     try:
-        data = tomllib.loads(path.read_text(encoding="utf-8"))
+        if not path.is_file():
+            raise PluginLoadError(plugin_id, f"missing {path.name}")
+        text = path.read_text(encoding="utf-8")
     except UnicodeError as exc:
         raise PluginLoadError(plugin_id, f"{path.name} must be UTF-8") from exc
+    except OSError as exc:
+        raise PluginLoadError(plugin_id, f"cannot read {path.name}") from exc
+    try:
+        data = tomllib.loads(text)
     except tomllib.TOMLDecodeError as exc:
         raise PluginLoadError(plugin_id, f"invalid TOML in {path.name}") from exc
     return data

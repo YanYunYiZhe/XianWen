@@ -26,6 +26,9 @@ def load_plugins(root: Path) -> PluginRegistry:
         except PluginLoadError as exc:
             errors.append(exc)
             continue
+        except OSError:
+            errors.append(PluginLoadError(directory.name, "cannot read plugin files"))
+            continue
         if loaded.id in seen_plugin_ids:
             errors.append(PluginLoadError(loaded.id, "plugin id is already registered"))
             continue

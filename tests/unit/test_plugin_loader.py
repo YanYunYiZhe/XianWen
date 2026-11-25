@@ -154,6 +154,43 @@ def test_event_id_outside_namespace_is_rejected(tmp_path: Path) -> None:
     assert "outside namespace" in caught.value.reason
 
 
+def test_unreadable_plugin_file_does_not_stop_scan(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _write_plugin(
+        tmp_path,
+        "broken-pack",
+        manifest=_MANIFEST.replace("official-example", "broken-pack"),
+        events=_EVENTS.replace("official-example", "broken-pack"),
+    )
+    _write_plugin(
+        tmp_path,
+        "road-notes",
+        manifest=_MANIFEST.replace("official-example", "road-notes"),
+        events=_EVENTS.replace("official-example", "road-notes"),
+    )
+    original = Path.read_text
+
+    def read_text(self: Path, *args: object, **kwargs: object) -> str:
+        if "broken-pack" in self.parts:
+            raise OSError("permission denied")
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "read_text", read_text)
+    registry = load_plugins(tmp_path)
+    state = new_game()
+    event = get_current_event(state)
+    result = apply_choice(state, event.id, "cultivate")
+
+    assert [item.id for item in registry.plugins] == ["road-notes"]
+    assert registry.errors[0].plugin_id == "broken-pack"
+    assert registry.errors[0].reason == "cannot read plugin.toml"
+    assert event.id == "base.morning_training"
+    assert result.state.year == 2
+    assert result.state.cultivation == 1
+
+
 def test_failed_plugin_does_not_remove_base_event(tmp_path: Path) -> None:
     _write_plugin(tmp_path, events=_EVENTS.replace("fallback_scene_text", "scene"))
     _write_plugin(
